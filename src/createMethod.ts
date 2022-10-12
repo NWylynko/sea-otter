@@ -4,13 +4,14 @@ import { AppOptions } from ".";
 import { Server } from './servers';
 import type { z } from "zod"
 import { createHandler } from './createHandler';
-import { HandlersMap, HandlersMaps } from './createHandlersMaps';
+import { Router } from './app';
+
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD"
 
 export const createMethod = 
   (server: Server, options: AppOptions) => 
-  (method: Method, handlersMap: HandlersMap) =>
+  (method: Method, router: Router) =>
 {
 
   const handlerRegister = createHandler(options);
@@ -20,9 +21,7 @@ export const createMethod =
     const handler = handlerRegister(path)
     const validate = createValidator(handler);
 
-    const partsOfPath = path.split('/');
-
-    handlersMap.set(partsOfPath, handler)
+    
 
     return {
       validate,

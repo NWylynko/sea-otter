@@ -15,3 +15,9 @@ export const getServer = (runtime: Runtime) => {
 
 export type StartServer = ReturnType<typeof getServer>
 export type Server = Awaited<ReturnType<StartServer>>
+
+export type ListenerDetails = {
+  stop: () => void,
+  hostname: string,
+  port: number,
+}

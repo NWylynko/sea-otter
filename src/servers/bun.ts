@@ -1,14 +1,33 @@
-import { ListenerOptions } from "../listener";
+import type { Server } from "bun";
+import { ListenerDetails } from ".";
+import { AppOptions } from "..";
+
+type BunHandler = (request: Request) => Response | Promise<Response>
+
+type BunServerOptions = {
+  handler: BunHandler;
+}
 
 
-export const createBunServer = async () => {
+export const createBunServer = 
+  async (appOptions: AppOptions, { handler }: BunServerOptions) =>
+  {
 
-  const listen = ({ port }: ListenerOptions) => {
-    return new Promise<void>((resolve, reject) => {
+  const { server } = await import("./_bun.js")
 
-      resolve();
+  const listen = async (): Promise<ListenerDetails> => {
+    
+    const app = server({
+
+      fetch: handler,
 
     })
+
+    return {
+      stop: app.stop,
+      hostname: app.hostname,
+      port: app.port,
+    }
   }
 
   return {

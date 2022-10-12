@@ -1,6 +1,5 @@
 import { fakeFetch } from "./fakeFetch"
 import { getRuntime } from "./getRuntime"
-import { listener } from "./listener"
 import { createMethod } from "./createMethod"
 import { getServer } from "./servers"
 
@@ -13,18 +12,18 @@ const defaultOptions = {
 export type Options = typeof defaultOptions
 type PartialOptions = Partial<Options>
 
+export type Router = FindMyWay.Instance<FindMyWay.HTTPVersion.V1>
+
 export const createApp = async (options: PartialOptions = defaultOptions) => {
 
   const options_ = { ...defaultOptions, ...options }
 
-  const router = FindMyWay({
-    
-  })
+  const router = FindMyWay({})
 
   const runtime = getRuntime();
   const startServer = getServer(runtime);
 
-  const server = await startServer({
+  const server = await startServer(options_, {
     handler: () => {
       console.log('bruh')
     }
@@ -32,16 +31,16 @@ export const createApp = async (options: PartialOptions = defaultOptions) => {
 
   const defineMethod = createMethod(server, options_)
 
-  const get = defineMethod("GET", handlersMap.get);
-  const post = defineMethod("POST", handlersMap.post);
-  const put = defineMethod("PUT", handlersMap.put);
-  const patch = defineMethod("PATCH", handlersMap.patch);
-  const _delete = defineMethod("DELETE", handlersMap.delete);
-  const _options = defineMethod("OPTIONS", handlersMap.options);
-  const head = defineMethod("HEAD", handlersMap.head);
+  const get = defineMethod("GET", router);
+  const post = defineMethod("POST", router);
+  const put = defineMethod("PUT", router);
+  const patch = defineMethod("PATCH", router);
+  const _delete = defineMethod("DELETE", router);
+  const _options = defineMethod("OPTIONS", router);
+  const head = defineMethod("HEAD", router);
 
-  const fetch = fakeFetch(server, options_);
-  const listen = listener(server, options_);
+  const fetch = fakeFetch(server, options_, router);
+  const listen = server.listen
 
   return {
 
