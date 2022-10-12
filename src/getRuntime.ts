@@ -1,6 +1,7 @@
 
 export const getRuntime = () => {
   try {
+    // @ts-ignore
     const runtime = process.argv0
 
     if (runtime === "node") {

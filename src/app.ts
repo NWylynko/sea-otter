@@ -2,21 +2,27 @@ import { fakeFetch } from "./fakeFetch"
 import { getRuntime } from "./getRuntime"
 import { createMethod } from "./createMethod"
 import { getServer } from "./servers"
+import { validateEnv } from "./env";
 
 import FindMyWay from "find-my-way";
 
-const defaultOptions = {
-  port: process.env.PORT ?? 3000
+export type Options = {
+  port: number | string,
+  hostname: string
 }
-
-export type Options = typeof defaultOptions
 type PartialOptions = Partial<Options>
 
 export type Router = FindMyWay.Instance<FindMyWay.HTTPVersion.V1>
 
-export const createApp = async (options: PartialOptions = defaultOptions) => {
+export const createApp = async (options: PartialOptions = {}) => {
 
-  const options_ = { ...defaultOptions, ...options }
+  const env = await validateEnv()
+
+  const options_ = {
+    port: env.PORT,
+    hostname: env.HOSTNAME,
+    ...options
+  }
 
   const router = FindMyWay({})
 
@@ -24,20 +30,22 @@ export const createApp = async (options: PartialOptions = defaultOptions) => {
   const startServer = getServer(runtime);
 
   const server = await startServer(options_, {
-    handler: () => {
+    handler: (conn) => {
       console.log('bruh')
+
+      return new Response(`hello`)
     }
   });
 
-  const defineMethod = createMethod(server, options_)
+  const defineMethod = createMethod(server, options_, router)
 
-  const get = defineMethod("GET", router);
-  const post = defineMethod("POST", router);
-  const put = defineMethod("PUT", router);
-  const patch = defineMethod("PATCH", router);
-  const _delete = defineMethod("DELETE", router);
-  const _options = defineMethod("OPTIONS", router);
-  const head = defineMethod("HEAD", router);
+  const get = defineMethod("GET");
+  const post = defineMethod("POST");
+  const put = defineMethod("PUT");
+  const patch = defineMethod("PATCH");
+  const _delete = defineMethod("DELETE");
+  const _options = defineMethod("OPTIONS");
+  const head = defineMethod("HEAD");
 
   const fetch = fakeFetch(server, options_, router);
   const listen = server.listen

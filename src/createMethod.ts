@@ -10,18 +10,16 @@ import { Router } from './app';
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD"
 
 export const createMethod = 
-  (server: Server, options: AppOptions) => 
-  (method: Method, router: Router) =>
+  (server: Server, options: AppOptions, router: Router) => 
+  (method: Method) =>
 {
 
-  const handlerRegister = createHandler(options);
+  const handlerRegister = createHandler(options, router);
 
   const registerPath = (path: string) => {
 
     const handler = handlerRegister(path)
     const validate = createValidator(handler);
-
-    
 
     return {
       validate,
@@ -29,8 +27,6 @@ export const createMethod =
     }
 
   }
-
-
 
   return registerPath;
 }

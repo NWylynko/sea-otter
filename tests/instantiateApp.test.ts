@@ -15,9 +15,12 @@ it('should instantiate an app', async () => {
     .get('/')
     .validate(schema)
     .handler(async (req) => {
+
+      const { name } = await req.getQueries()
+
       return {
         body: {
-          hello: req.query.name
+          hello: name
         }
       }
     })

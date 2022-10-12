@@ -34,7 +34,8 @@ export const createDenoServer =
     return {
       stop: requests.close,
       hostname: requests.addr.hostname,
-      port: requests.addr.port
+      port: requests.addr.port,
+      url: `http://${requests.addr.hostname}:${requests.addr.port}/`
     }
   }
 

@@ -20,4 +20,5 @@ export type ListenerDetails = {
   stop: () => void,
   hostname: string,
   port: number,
+  url: string,
 }

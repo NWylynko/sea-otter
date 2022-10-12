@@ -23,10 +23,13 @@ export const createBunServer =
 
     })
 
+    const hostname = app.hostname.split('/')[2].split(':')[0]
+
     return {
       stop: app.stop,
-      hostname: app.hostname,
+      hostname,
       port: app.port,
+      url: `http://${hostname}:${app.port}/`
     }
   }
 

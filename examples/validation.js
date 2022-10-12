@@ -1,4 +1,4 @@
-import { createApp } from "../src"
+import { createApp } from "../dist/index.js"
 import { z } from "zod";
 
 const jwtRegex = /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/
@@ -26,26 +26,33 @@ const main = async () => {
   }
 
   app
-    .get('/')
+    .get('/[id]')
     .validate(schema)
     .handler(async (req) => {
 
-      console.log('handler called')
+      console.log('validation handler called')
+
+      // here we get the full object and then grab out what we need
+      const headers = await req.getHeaders()
+      const { animal } = await req.getQueries();
+      const { id } = await req.getParams();
+      const { name } = await req.getBody()
+      const { jwt } = await req.getCookies();
 
       return {
         body: {
-          type: req.headers["Content-type"]?.split("/")[1],
-          fluffy: req.query.animal,
-          userId: req.params.id,
-          hello: req.body.name,
-          loggedIn: !!req.cookies.jwt
+          type: headers["Content-type"]?.split("/")[1],
+          fluffy: animal,
+          userId: id,
+          hello: name,
+          loggedIn: !!jwt
         },
       }
     })
 
-  await app.listen();
+  const { stop, ...details } = await app.listen();
 
-  console.log(`listening on port 3000`)
+  console.log({ msg: `Listening at`, ...details })
 
 }
 

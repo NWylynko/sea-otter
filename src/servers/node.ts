@@ -43,7 +43,8 @@ export const createNodeServer =
         resolve({
           stop: server.close,
           hostname: details.address,
-          port: details.port
+          port: details.port,
+          url: `http://${details.address}:${details.port}/`
         })
       })
 
