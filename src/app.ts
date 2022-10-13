@@ -1,43 +1,39 @@
-import { fakeFetch } from "./fakeFetch"
-import { getRuntime } from "./getRuntime"
-import { createMethod } from "./createMethod"
-import { getServer } from "./servers"
+import { fakeFetch } from "./fakeFetch";
+import { getRuntime } from "./getRuntime";
+import { createMethod } from "./createMethod";
+import { getServer } from "./servers";
 import { validateEnv } from "./env";
 
 import FindMyWay from "find-my-way";
+import { handler } from "./handler";
 
 export type Options = {
-  port: number | string,
-  hostname: string
-}
-type PartialOptions = Partial<Options>
+  port: number | string;
+  hostname: string;
+};
+type PartialOptions = Partial<Options>;
 
-export type Router = FindMyWay.Instance<FindMyWay.HTTPVersion.V1>
+export type Router = ReturnType<typeof FindMyWay>;
 
 export const createApp = async (options: PartialOptions = {}) => {
-
-  const env = await validateEnv()
+  const env = await validateEnv();
 
   const options_ = {
     port: env.PORT,
     hostname: env.HOSTNAME,
-    ...options
-  }
+    ...options,
+  };
 
-  const router = FindMyWay({})
+  const router = FindMyWay();
 
   const runtime = getRuntime();
-  const startServer = getServer(runtime);
+  const startServer = await getServer(runtime);
 
-  const server = await startServer(options_, {
-    handler: (conn) => {
-      console.log('bruh')
-
-      return new Response(`hello`)
-    }
+  const { listen } = await startServer(options_, {
+    handler: handler(router),
   });
 
-  const defineMethod = createMethod(server, options_, router)
+  const defineMethod = createMethod(options_, router);
 
   const get = defineMethod("GET");
   const post = defineMethod("POST");
@@ -47,56 +43,54 @@ export const createApp = async (options: PartialOptions = {}) => {
   const _options = defineMethod("OPTIONS");
   const head = defineMethod("HEAD");
 
-  const fetch = fakeFetch(server, options_, router);
-  const listen = server.listen
+  const fetch = fakeFetch(options_, router);
 
   return {
-
     /**
-    * Register a GET request
-    */
+     * Register a GET request
+     */
     get,
 
     /**
-    * Register a POST request
-    */
+     * Register a POST request
+     */
     post,
 
     /**
-    * Register a PUT request
-    */
+     * Register a PUT request
+     */
     put,
 
     /**
-    * Register a PATCH request
-    */
+     * Register a PATCH request
+     */
     patch,
 
     /**
-    * Register a DELETE request
-    */
+     * Register a DELETE request
+     */
     delete: _delete,
 
     /**
-    * Register a OPTIONS request
-    */
+     * Register a OPTIONS request
+     */
     options: _options,
 
     /**
-    * Register a HEAD request
-    */
+     * Register a HEAD request
+     */
     head,
 
     /**
-    * Make a fetch request against the api (for testing it)
-    */
+     * Make a fetch request against the api (for testing it)
+     */
     fetch,
 
     /**
-    * Start listening for requests
-    */
-    listen
-  }
-}
+     * Start listening for requests
+     */
+    listen,
+  };
+};
 
 export type App = ReturnType<typeof createApp>;

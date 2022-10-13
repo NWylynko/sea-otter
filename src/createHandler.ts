@@ -1,7 +1,7 @@
-import type { Response } from './Response';
-import type { Request } from './Request';
+import type { Response } from "./Response";
+import type { Request } from "./Request";
 import type { AppOptions } from ".";
-import type { Router } from './app';
+import type { Router } from "./app";
 
 // this is one crazy trail of functions
 // 1. we pass through the app options defined when the user calls createApp
@@ -11,13 +11,12 @@ import type { Router } from './app';
 // 4. lastly the raw request and response objects are passed through when
 //    a request is called.
 
-export const createHandler = 
-  (appOptions: AppOptions, router: Router) => 
-  (path: string) => 
+export const createHandler =
+  (appOptions: AppOptions, router: Router) =>
+  (path: string) =>
   (handler: (request: Request) => Response) =>
   async (req: any, res: any) => {
-
-    console.log('handler');
+    console.log("handler");
 
     // use the validator to validate the request if its defined
     const response = await handler({
@@ -29,15 +28,14 @@ export const createHandler =
 
       getParams: async () => ({}),
       getParam: async (name: string) => undefined,
-      
+
       getBody: async () => ({}),
       getBodyItem: async (name: string) => undefined,
-      
+
       getCookies: async () => ({}),
       getCookie: async (name: string) => undefined,
     });
 
     // response send the response to the client
     return;
-
   };

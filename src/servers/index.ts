@@ -1,24 +1,26 @@
-import { createNodeServer } from './node';
-import { createBunServer } from './bun';
-import { createDenoServer } from './deno';
-import { Runtime } from '../getRuntime';
+import type { NodeHandler } from "./node";
+import type { BunHandler } from "./bun";
+import type { DenoHandler } from "./deno";
+import { Runtime } from "../getRuntime";
 
 const servers = {
-  bun: createBunServer,
-  deno: createDenoServer,
-  node: createNodeServer
-}
+  bun: () => import("./bun").then(({ createBunServer }) => createBunServer),
+  deno: () => import("./deno").then(({ createDenoServer }) => createDenoServer),
+  node: () => import("./node").then(({ createNodeServer }) => createNodeServer),
+};
 
 export const getServer = (runtime: Runtime) => {
-  return servers[runtime];
-}
+  return servers[runtime]();
+};
 
-export type StartServer = ReturnType<typeof getServer>
-export type Server = Awaited<ReturnType<StartServer>>
+export type GetServer = Awaited<ReturnType<typeof getServer>>;
+export type StartServer = Awaited<ReturnType<GetServer>>;
 
 export type ListenerDetails = {
-  stop: () => void,
-  hostname: string,
-  port: number,
-  url: string,
-}
+  stop: () => void;
+  hostname: string;
+  port: number;
+  url: string;
+};
+
+export type Handler = BunHandler & DenoHandler & NodeHandler;

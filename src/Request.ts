@@ -1,24 +1,22 @@
+type UnknownObject = { [key: string]: string | undefined };
+type UnknownGetter = () => Promise<UnknownObject>;
+type UnknownNamedGetter = (name: string) => Promise<string | undefined>;
 
-type UnknownObject = { [key: string]: string | undefined }
-type UnknownGetter = () => Promise<UnknownObject>
-type UnknownNamedGetter = (name: string) => Promise<string | undefined>
-
-export type Request = UnValidatedRequest
+export type Request = UnValidatedRequest;
 
 export type UnValidatedRequest = {
-  getHeaders: UnknownGetter,
-  getHeader: UnknownNamedGetter,
+  getHeaders: UnknownGetter;
+  getHeader: UnknownNamedGetter;
 
-  getQueries: UnknownGetter,
-  getQuery: UnknownNamedGetter,
+  getQueries: UnknownGetter;
+  getQuery: UnknownNamedGetter;
 
-  getParams: UnknownGetter,
-  getParam: UnknownNamedGetter,
+  getParams: UnknownGetter;
+  getParam: UnknownNamedGetter;
 
-  getBody: UnknownGetter,
-  getBodyItem: UnknownNamedGetter,
+  getBody: UnknownGetter;
+  getBodyItem: UnknownNamedGetter;
 
-  getCookies: UnknownGetter,
-  getCookie: UnknownNamedGetter
-}
-
+  getCookies: UnknownGetter;
+  getCookie: UnknownNamedGetter;
+};
